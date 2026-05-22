@@ -136,7 +136,7 @@ export const PhotoCardCanvas = forwardRef(({
         fill={layerConfig.color || "#000000"}
         align={layerConfig.align || "center"}
         width={width} // Ensure text is centered relative to card width
-        fontFamily="Bricolage Grotesque"
+        fontFamily='"Bricolage Grotesque", "Hind Siliguri", sans-serif'
         draggable={!!onLayerTransform}
         onDragEnd={(e) => {
           if (onLayerTransform) {
