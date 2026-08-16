@@ -43,6 +43,7 @@ export default function HomePage() {
       filtered = filtered.filter(t => t.category === activeCategory.toLowerCase());
     }
 
+    // Sort: Rank 1-10 first, then by date (newest first)
     return filtered.sort((a, b) => {
       const rankA = a.displayRank || 999;
       const rankB = b.displayRank || 999;
@@ -119,14 +120,14 @@ export default function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {templates.map(template => (
               <Link key={template.id} href={`/generate/${template.id}`}>
-                <Card className="group relative overflow-hidden border-border/50 bg-card transition-all duration-500 hover:border-primary/40 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10 rounded-3xl">
+                <Card className="group relative overflow-hidden border-border/50 bg-card transition-all duration-500 hover:border-primary/40 hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/10 rounded-3xl">
                   <div className="aspect-[4/3] relative overflow-hidden bg-muted/20">
                     {template.backgroundImageUrl ? (
                       <Image
                         src={template.backgroundImageUrl}
                         alt={template.title}
                         fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="object-cover"
                         sizes="(max-width: 768px) 100vw, 33vw"
                         priority={template.displayRank && template.displayRank <= 3 ? true : false}
                       />
@@ -153,10 +154,10 @@ export default function HomePage() {
                     </div>
                   </div>
                   <CardContent className="p-6">
-                    <CardTitle className="text-xl md:text-2xl font-bold group-hover:text-primary transition-colors truncate mb-1">
+                    <CardTitle className="text-base md:text-lg font-bold group-hover:text-primary transition-colors truncate mb-1">
                       {template.title}
                     </CardTitle>
-                    <p className="text-xs md:text-sm text-muted-foreground line-clamp-1">{template.subtitle}</p>
+                    <p className="text-[10px] md:text-xs text-muted-foreground line-clamp-1">{template.subtitle}</p>
                   </CardContent>
                 </Card>
               </Link>
@@ -173,7 +174,7 @@ export default function HomePage() {
         )}
       </section>
 
-      <footer className="py-12 border-t border-border/30 text-center text-xs md:text-sm text-muted-foreground px-4 space-y-2">
+      <footer className="py-8 border-t border-border/30 text-center text-[10px] md:text-xs text-muted-foreground px-4 space-y-1">
         <p>&copy; {currentYear ?? '...'} CardSnap Studio - by CPI HTC. All rights reserved.</p>
         <p>
           Product by <a href="https://www.facebook.com/najmul.9341/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline transition-colors font-bold">Najmul H. Talukder</a>
@@ -182,4 +183,3 @@ export default function HomePage() {
     </div>
   );
 }
-
