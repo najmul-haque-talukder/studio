@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Template": {
@@ -11,6 +12,7 @@
         "status": { "type": "string", "enum": ["draft", "published"], "description": "Publishing status" },
         "category": { "type": "string", "description": "Template category (e.g., events, social)" },
         "featured": { "type": "boolean", "description": "Whether the template is highlighted on homepage" },
+        "displayRank": { "type": "number", "description": "Priority position for top 10 list (1-10)" },
         "usageCount": { "type": "number", "description": "Total number of cards generated using this template" },
         "photoConfig": { "type": "object", "description": "Configuration for the user photo placement and shape" },
         "nameConfig": { "type": "object", "description": "Configuration for user name text placement" },

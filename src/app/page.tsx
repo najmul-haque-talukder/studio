@@ -1,13 +1,14 @@
+
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { collection, query, where } from "firebase/firestore";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, ArrowRight, Loader2, Star, ImageIcon } from "lucide-react";
+import { Sparkles, ArrowRight, Loader2, Star, ImageIcon, Trophy } from "lucide-react";
 import Image from "next/image";
 
 interface Template {
@@ -18,6 +19,8 @@ interface Template {
   status: string;
   category?: string;
   featured?: boolean;
+  displayRank?: number;
+  updatedAt?: any;
 }
 
 const CATEGORIES = ["All", "Events", "Professional", "Academic", "Social"];
@@ -35,7 +38,23 @@ export default function HomePage() {
     return q;
   }, [db, activeCategory]);
 
-  const { data: templates, loading } = useCollection<Template>(templatesQuery);
+  const { data: rawTemplates, loading } = useCollection<Template>(templatesQuery);
+
+  // Sorting logic for Top 10 + Latest
+  const templates = useMemo(() => {
+    if (!rawTemplates) return [];
+    return [...rawTemplates].sort((a, b) => {
+      const rankA = a.displayRank || 999;
+      const rankB = b.displayRank || 999;
+      
+      if (rankA !== rankB) return rankA - rankB;
+      
+      // Secondary sort by date if rank is same
+      const dateA = a.updatedAt?.seconds || 0;
+      const dateB = b.updatedAt?.seconds || 0;
+      return dateB - dateA;
+    });
+  }, [rawTemplates]);
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
@@ -56,7 +75,7 @@ export default function HomePage() {
             Create high-quality 4K photocards in seconds. Optimized for speed and quality.
           </p>
 
-          <div className="w-full flex justify-center px-2">
+          <div className="w-full flex justify-center px-4">
             <div className="flex flex-wrap justify-center gap-2 max-w-2xl">
               {CATEGORIES.map(cat => (
                 <button
@@ -64,8 +83,8 @@ export default function HomePage() {
                   onClick={() => setActiveCategory(cat)}
                   className={`rounded-full px-4 md:px-8 py-2 md:py-2.5 border transition-all text-[10px] md:text-sm font-medium
                     ${activeCategory === cat 
-                      ? "bg-primary text-primary-foreground border-primary" 
-                      : "bg-muted/40 text-muted-foreground border-border/50 hover:bg-muted/60"}`}
+                      ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20" 
+                      : "bg-card text-muted-foreground border-border/50 hover:bg-muted/60"}`}
                 >
                   {cat}
                 </button>
@@ -77,9 +96,12 @@ export default function HomePage() {
 
       <section className="container mx-auto px-4 md:px-6 mb-16">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-3">
-          <h2 className="text-xl md:text-3xl font-bold tracking-tight">
-            {activeCategory === "All" ? "Latest Templates" : `${activeCategory} Templates`}
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl md:text-3xl font-bold tracking-tight">
+              {activeCategory === "All" ? "Premium Collection" : `${activeCategory} Templates`}
+            </h2>
+            {activeCategory === "All" && <Trophy className="w-5 h-5 text-yellow-500 hidden md:block" />}
+          </div>
           <Link href="/admin/login" className="text-[10px] md:text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
             Admin Console Access <ArrowRight className="w-3 h-3" />
           </Link>
@@ -97,7 +119,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {templates.map(template => (
               <Link key={template.id} href={`/generate/${template.id}`}>
-                <Card className="group relative overflow-hidden border-border/50 bg-card transition-all duration-300 hover:border-primary/40 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10 rounded-2xl">
+                <Card className="group relative overflow-hidden border-border/50 bg-card transition-all duration-300 hover:border-primary/40 hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary/20 rounded-2xl">
                   <div className="aspect-[4/3] relative overflow-hidden bg-muted/20">
                     {template.backgroundImageUrl ? (
                       <Image
@@ -105,22 +127,26 @@ export default function HomePage() {
                         alt={template.title}
                         fill
                         className="object-cover"
-                        unoptimized={template.backgroundImageUrl.includes('firebasestorage.googleapis.com')}
                         sizes="(max-width: 768px) 100vw, 33vw"
-                        priority
+                        priority={template.displayRank && template.displayRank <= 3 ? true : false}
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <ImageIcon className="w-10 h-10 text-muted-foreground/20" />
                       </div>
                     )}
-                    {template.featured && (
-                      <div className="absolute top-3 right-3 z-10">
-                        <Badge className="bg-yellow-500 text-black font-bold gap-1 shadow-lg text-[10px] border-none">
+                    <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 items-end">
+                      {template.displayRank && template.displayRank > 0 && template.displayRank <= 10 && (
+                        <Badge className="bg-yellow-500 text-black font-bold gap-1 shadow-xl text-[10px] border-none ring-2 ring-black/5">
+                          <Trophy className="w-2.5 h-2.5" /> Top {template.displayRank}
+                        </Badge>
+                      )}
+                      {template.featured && (
+                        <Badge className="bg-primary text-white font-bold gap-1 shadow-lg text-[10px] border-none">
                           <Star className="w-2.5 h-2.5 fill-current" /> Featured
                         </Badge>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                   <CardContent className="p-4 md:p-6">
                     <div className="flex items-start justify-between mb-1 gap-2">

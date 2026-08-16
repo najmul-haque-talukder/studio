@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -13,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { ChevronLeft, Save, Upload, Loader2, Sparkles, Image as ImageIcon, Type, Target, MousePointer2, Palette, Settings } from "lucide-react";
+import { ChevronLeft, Save, Upload, Loader2, Sparkles, Image as ImageIcon, Type, Target, MousePointer2, Palette, Settings, Trophy } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -28,6 +29,7 @@ const DEFAULT_CONFIG = {
   status: "draft",
   category: "events",
   featured: false,
+  displayRank: 0,
   backgroundImageUrl: "",
   photoConfig: {
     shape: "circle",
@@ -162,7 +164,8 @@ export default function TemplateEditorPage() {
       id: templateId, 
       status, 
       updatedAt: serverTimestamp(),
-      usageCount: config.usageCount || 0
+      usageCount: config.usageCount || 0,
+      displayRank: Number(config.displayRank) || 0
     };
 
     setDoc(docRef, data, { merge: true })
@@ -254,11 +257,25 @@ export default function TemplateEditorPage() {
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs">Featured</Label>
-                  <div className="flex items-center justify-between h-9 px-3 border rounded-lg bg-muted/20">
-                    <span className="text-[10px] font-medium">Spotlight</span>
-                    <Switch checked={config.featured} onCheckedChange={(val) => handleUpdate("featured", val)} className="scale-75" />
-                  </div>
+                  <Label className="text-xs flex items-center gap-1"><Trophy className="w-3 h-3 text-yellow-500" /> Top 10 Rank</Label>
+                  <select 
+                    value={config.displayRank || 0} 
+                    onChange={(e) => handleUpdate("displayRank", Number(e.target.value))}
+                    className="flex h-9 w-full rounded-lg border border-input bg-background px-3 py-1 text-xs focus:outline-none"
+                  >
+                    <option value={0}>None</option>
+                    {[1,2,3,4,5,6,7,8,9,10].map(r => (
+                      <option key={r} value={r}>Position {r}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <Label className="text-xs">Featured Spotlight</Label>
+                <div className="flex items-center justify-between h-9 px-3 border rounded-lg bg-muted/20">
+                  <span className="text-[10px] font-medium italic">Highlight on home screen</span>
+                  <Switch checked={config.featured} onCheckedChange={(val) => handleUpdate("featured", val)} className="scale-75" />
                 </div>
               </div>
 
@@ -379,7 +396,7 @@ export default function TemplateEditorPage() {
                <PhotoCardCanvas 
                 config={{
                   ...config,
-                  nameConfig: { ...config.nameConfig, text: "Preview Full Name" },
+                  nameConfig: { ...config.nameConfig, text: "Enter Your Name" },
                   designationConfig: { ...config.designationConfig, text: "Department/Designation" },
                   sessionConfig: { ...config.sessionConfig, text: "Session 2021-22" }
                 }} 

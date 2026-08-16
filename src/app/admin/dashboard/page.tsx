@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useMemo, useState } from "react";
@@ -20,7 +21,7 @@ import {
   AlertDialogHeader, 
   AlertDialogTitle 
 } from "@/components/ui/alert-dialog";
-import { Plus, Edit2, Trash2, Eye, EyeOff, LayoutDashboard, LogOut, Loader2, AlertTriangle, ImageIcon } from "lucide-react";
+import { Plus, Edit2, Trash2, Eye, EyeOff, LayoutDashboard, LogOut, Loader2, AlertTriangle, ImageIcon, Trophy } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -30,6 +31,7 @@ interface Template {
   title: string;
   status: "draft" | "published";
   backgroundImageUrl: string;
+  displayRank?: number;
 }
 
 export default function AdminDashboard() {
@@ -142,17 +144,22 @@ export default function AdminDashboard() {
                       alt={template.title}
                       fill
                       className="object-cover"
-                      unoptimized={template.backgroundImageUrl.includes('firebasestorage.googleapis.com')}
+                      sizes="(max-width: 768px) 100vw, 33vw"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <ImageIcon className="w-8 h-8 text-muted-foreground/50" />
                     </div>
                   )}
-                  <div className="absolute top-3 left-3">
+                  <div className="absolute top-3 left-3 flex gap-2">
                     <Badge variant={template.status === "published" ? "default" : "secondary"} className="shadow-lg backdrop-blur-sm bg-opacity-80">
                       {template.status === "published" ? "Published" : "Draft"}
                     </Badge>
+                    {template.displayRank && template.displayRank > 0 && (
+                      <Badge variant="secondary" className="bg-yellow-500/90 text-black border-none gap-1 shadow-lg">
+                        <Trophy className="w-3 h-3" /> #{template.displayRank}
+                      </Badge>
+                    )}
                   </div>
                 </div>
                 <CardContent className="p-5">
