@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -108,37 +109,37 @@ export default function GeneratePage() {
     <div className="min-h-screen bg-background">
       <nav className="border-b border-border/50 p-4 sticky top-0 bg-background/80 backdrop-blur-md z-50">
         <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2 md:gap-4">
-            <Button variant="ghost" size="icon" onClick={() => router.push("/")} className="h-8 w-8 md:h-10 md:w-10">
-              <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => router.push("/")}>
+              <ChevronLeft />
             </Button>
-            <h1 className="font-bold text-sm md:text-lg truncate max-w-[150px] md:max-w-none">{template.title}</h1>
+            <h1 className="font-bold text-lg">{template.title}</h1>
           </div>
-          <Badge variant="secondary" className="gap-1 text-[10px] md:text-xs">
+          <Badge variant="secondary" className="gap-1">
             <Sparkles className="w-3 h-3 text-primary" /> {template.usageCount || 0}
           </Badge>
         </div>
       </nav>
 
-      <main className="container mx-auto px-4 py-6 md:py-12">
-        <div className="flex flex-col md:flex-row gap-8 items-start justify-center">
+      <main className="container mx-auto px-4 py-12">
+        <div className="flex flex-col md:flex-row gap-12 items-start justify-center">
           {/* Sidebar / Form */}
-          <div className={`w-full md:w-[350px] space-y-6 ${step === 2 ? "hidden md:block" : "block"}`}>
-            <div className="space-y-4">
-              <h2 className="text-lg md:text-xl font-bold flex items-center gap-2">
-                <span className="w-6 h-6 md:w-8 md:h-8 bg-primary text-white rounded-full flex items-center justify-center text-xs md:text-sm">1</span>
+          <div className={`w-full md:w-[400px] space-y-8 ${step === 2 ? "hidden md:block" : "block"}`}>
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold flex items-center gap-3">
+                <span className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm">1</span>
                 Customize Details
               </h2>
               
-              <div className="space-y-2">
-                <Label className="text-sm">Your Photo</Label>
+              <div className="space-y-3">
+                <Label>Your Photo</Label>
                 <div className="relative group aspect-square rounded-2xl border-2 border-dashed border-border bg-muted/30 hover:bg-muted/50 transition-colors flex flex-col items-center justify-center overflow-hidden">
                   {userPhotoUrl ? (
                     <img src={userPhotoUrl} alt="Preview" className="w-full h-full object-cover" />
                   ) : (
                     <>
-                      <Camera className="w-8 h-8 md:w-10 md:h-10 text-muted-foreground mb-2" />
-                      <span className="text-xs text-muted-foreground text-center px-4">Upload your photo</span>
+                      <Camera className="w-10 h-10 text-muted-foreground mb-2" />
+                      <span className="text-xs text-muted-foreground">Upload your photo</span>
                     </>
                   )}
                   <input
@@ -150,42 +151,42 @@ export default function GeneratePage() {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="space-y-1">
-                  <Label htmlFor="name" className="text-xs">Full Name</Label>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Enter Your Name"
-                    className="rounded-xl h-10 md:h-12 text-sm"
+                    className="rounded-xl h-12"
                   />
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor="designation" className="text-xs">Designation / Department</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="designation">Designation / Department</Label>
                   <Input
                     id="designation"
                     value={formData.designation}
                     onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
                     placeholder="Enter Your Designation"
-                    className="rounded-xl h-10 md:h-12 text-sm"
+                    className="rounded-xl h-12"
                   />
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor="session" className="text-xs">Session / Batch</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="session">Session / Batch</Label>
                   <Input
                     id="session"
                     value={formData.session}
                     onChange={(e) => setFormData({ ...formData, session: e.target.value })}
                     placeholder="Enter Your Session"
-                    className="rounded-xl h-10 md:h-12 text-sm"
+                    className="rounded-xl h-12"
                   />
                 </div>
               </div>
             </div>
 
             <Button 
-              className="w-full h-12 md:h-14 rounded-xl text-base md:text-lg font-bold gap-2 md:hidden" 
+              className="w-full h-14 rounded-xl text-lg font-bold gap-2 md:hidden" 
               onClick={() => setStep(2)}
               disabled={!userPhotoUrl}
             >
@@ -194,8 +195,8 @@ export default function GeneratePage() {
           </div>
 
           {/* Preview Section */}
-          <div className={`flex-1 w-full max-w-[500px] space-y-6 ${step === 1 ? "hidden md:block" : "block"}`}>
-            <h2 className="text-lg md:text-xl font-bold hidden md:flex items-center gap-2">
+          <div className={`flex-1 w-full max-w-[500px] space-y-8 ${step === 1 ? "hidden md:block" : "block"}`}>
+            <h2 className="text-2xl font-bold hidden md:flex items-center gap-3">
               <span className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm">2</span>
               Live Preview
             </h2>
@@ -212,14 +213,14 @@ export default function GeneratePage() {
 
             {/* Position Controls */}
             {userPhotoUrl && (
-              <div className="p-4 md:p-5 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 shadow-lg space-y-6">
+              <div className="p-6 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 shadow-lg space-y-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <ZoomIn className="w-4 h-4 text-primary" />
                       <span className="text-xs font-bold uppercase tracking-wider">Scale Image</span>
                     </div>
-                    <Badge variant="secondary" className="font-mono text-[10px]">{Math.round(userPhotoScale * 100)}%</Badge>
+                    <Badge variant="secondary" className="font-mono">{Math.round(userPhotoScale * 100)}%</Badge>
                   </div>
                   <Slider 
                     value={[userPhotoScale]} 
@@ -230,7 +231,7 @@ export default function GeneratePage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 gap-8">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -266,23 +267,23 @@ export default function GeneratePage() {
             )}
 
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col md:flex-row gap-3">
+              <div className="flex gap-4">
                 <Button 
                   variant="outline" 
-                  className="flex-1 h-12 md:h-14 rounded-xl md:hidden" 
+                  className="flex-1 h-14 rounded-xl md:hidden" 
                   onClick={() => setStep(1)}
                 >
-                  <ChevronLeft className="w-4 h-4 mr-2" /> Back to Edit
+                  <ChevronLeft className="w-4 h-4 mr-2" /> Back
                 </Button>
                 <Button 
-                  className="flex-1 h-12 md:h-14 rounded-xl text-base md:text-lg font-bold bg-secondary hover:bg-secondary/90 gap-2 shadow-xl shadow-secondary/10"
+                  className="flex-1 h-14 rounded-xl text-lg font-bold bg-secondary hover:bg-secondary/90 gap-2 shadow-xl shadow-secondary/10"
                   onClick={handleDownload}
                   disabled={!userPhotoUrl}
                 >
-                  <Download className="w-4 h-4 md:w-5 md:h-5" /> Download 4K JPG
+                  <Download className="w-5 h-5" /> Download 4K JPG
                 </Button>
               </div>
-              <p className="text-center text-[10px] md:text-xs text-muted-foreground italic">
+              <p className="text-center text-xs text-muted-foreground italic">
                 {userPhotoUrl ? "Use the sliders above to position your photo perfectly." : "Upload your photo to preview."}
               </p>
             </div>

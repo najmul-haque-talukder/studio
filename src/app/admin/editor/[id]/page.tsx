@@ -194,39 +194,35 @@ export default function TemplateEditorPage() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-background">
-      <header className="h-14 md:h-16 border-b border-border/50 bg-card px-3 md:px-4 flex items-center justify-between z-50 shrink-0">
-        <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
-          <Button variant="ghost" size="icon" onClick={() => router.push("/admin/dashboard")} className="h-8 w-8">
+      <header className="h-16 border-b border-border/50 bg-card px-4 flex items-center justify-between z-50 shrink-0">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => router.push("/admin/dashboard")}>
             <ChevronLeft />
           </Button>
-          <div className="truncate">
-            <h1 className="font-bold text-sm md:text-xl leading-tight truncate">{id === "new" ? "New Template" : config.title}</h1>
-            <p className="hidden md:block text-[10px] text-muted-foreground uppercase tracking-wider">Design Mode</p>
+          <div>
+            <h1 className="font-bold text-xl leading-tight">{id === "new" ? "New Template" : config.title}</h1>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Design Mode</p>
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => handleSave("draft")} disabled={saving} className="h-8 text-xs px-2 md:px-3">
+          <Button variant="outline" size="sm" onClick={() => handleSave("draft")} disabled={saving}>
             Draft
           </Button>
-          <Button size="sm" onClick={() => handleSave("published")} disabled={saving} className="h-8 text-xs gap-1 md:gap-2 font-bold px-2 md:px-4">
-            {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3 md:w-4 md:h-4" />}
+          <Button size="sm" onClick={() => handleSave("published")} disabled={saving} className="gap-2 font-bold px-4">
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Save & Publish
           </Button>
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+      <main className="flex-1 flex overflow-hidden relative">
         {/* Settings Sidebar */}
         <div className={`
           fixed md:relative inset-y-0 left-0 z-40 w-full md:w-[450px] bg-card border-r border-border/50 
           transition-transform duration-300 transform 
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-          overflow-y-auto p-4 md:p-6 space-y-8 custom-scrollbar
+          overflow-y-auto p-6 space-y-8 custom-scrollbar
         `}>
-          <div className="md:hidden flex justify-end mb-4">
-             <Button variant="ghost" size="sm" onClick={() => setSidebarOpen(false)}>Close Settings</Button>
-          </div>
-
           <section className="space-y-4">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="w-5 h-5 text-primary" />
@@ -281,14 +277,14 @@ export default function TemplateEditorPage() {
 
               <div className="space-y-1">
                 <Label className="text-xs">Background Layer</Label>
-                <div className="relative h-24 md:h-32 rounded-lg border-2 border-dashed border-border/50 flex flex-col items-center justify-center bg-muted/20 overflow-hidden group">
+                <div className="relative h-32 rounded-lg border-2 border-dashed border-border/50 flex flex-col items-center justify-center bg-muted/20 overflow-hidden group">
                   {config.backgroundImageUrl ? (
                     <img src={config.backgroundImageUrl} alt="BG" className="absolute inset-0 w-full h-full object-cover opacity-40" />
                   ) : (
-                    <ImageIcon className="w-6 h-6 md:w-8 md:h-8 text-primary/20" />
+                    <ImageIcon className="w-8 h-8 text-primary/20" />
                   )}
                   <div className="flex flex-col items-center gap-1 z-10">
-                    <Upload className="w-4 h-4 md:w-5 md:h-5 text-muted-foreground" />
+                    <Upload className="w-5 h-5 text-muted-foreground" />
                     <span className="text-[10px] font-medium">Click to Upload</span>
                   </div>
                   <input type="file" accept="image/*" onChange={handleBgUpload} className="absolute inset-0 opacity-0 cursor-pointer" disabled={uploading} />
@@ -373,7 +369,7 @@ export default function TemplateEditorPage() {
         </div>
 
         {/* Preview Panel */}
-        <div className="flex-1 bg-muted/5 flex flex-col items-center justify-center p-4 md:p-12 overflow-hidden relative">
+        <div className="flex-1 bg-muted/5 flex flex-col items-center justify-center p-12 overflow-hidden relative">
           <Button 
             variant="secondary" 
             size="sm" 
@@ -383,13 +379,13 @@ export default function TemplateEditorPage() {
             <Settings className="w-4 h-4" /> Edit Settings
           </Button>
 
-          <div className="w-full max-w-[500px] space-y-4 md:space-y-6">
+          <div className="w-full max-w-[500px] space-y-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-500 animate-pulse" />
-                <h3 className="text-[10px] md:text-sm font-semibold text-muted-foreground uppercase tracking-wider">Live Preview Canvas</h3>
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Live Preview Canvas</h3>
               </div>
-              <Badge variant="outline" className="hidden md:flex border-primary text-primary bg-primary/5 text-[10px]">Interactive</Badge>
+              <Badge variant="outline" className="border-primary text-primary bg-primary/5 text-[10px]">Interactive</Badge>
             </div>
             
             <div className="w-full shadow-2xl rounded-2xl overflow-hidden bg-muted/20 border-4 border-muted/50">
@@ -407,7 +403,7 @@ export default function TemplateEditorPage() {
                 }}
               />
             </div>
-            <div className="flex items-center justify-center gap-2 text-[9px] md:text-[10px] text-muted-foreground italic">
+            <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground italic">
               <MousePointer2 className="w-3 h-3" />
               Tip: Drag elements directly in the preview to position them.
             </div>

@@ -7,7 +7,6 @@ import { collection, query, where } from "firebase/firestore";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkles, ArrowRight, Loader2, Star, ImageIcon, Trophy } from "lucide-react";
 import Image from "next/image";
 
@@ -31,19 +30,24 @@ export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState("All");
   
   const templatesQuery = useMemoFirebase(() => {
-    let q = query(collection(db, "templates"), where("status", "==", "published"));
-    if (activeCategory !== "All") {
-      q = query(q, where("category", "==", activeCategory.toLowerCase()));
-    }
-    return q;
-  }, [db, activeCategory]);
+    // Basic query for published templates
+    return query(collection(db, "templates"), where("status", "==", "published"));
+  }, [db]);
 
   const { data: rawTemplates, loading } = useCollection<Template>(templatesQuery);
 
-  // Sorting logic for Top 10 + Latest
+  // Advanced Sorting and Filtering logic
   const templates = useMemo(() => {
     if (!rawTemplates) return [];
-    return [...rawTemplates].sort((a, b) => {
+    
+    // First, filter by category locally to ensure fast updates without complex indexes
+    let filtered = [...rawTemplates];
+    if (activeCategory !== "All") {
+      filtered = filtered.filter(t => t.category === activeCategory.toLowerCase());
+    }
+
+    // Then sort by Rank (1 to 10) first, then by date
+    return filtered.sort((a, b) => {
       const rankA = a.displayRank || 999;
       const rankB = b.displayRank || 999;
       
@@ -54,7 +58,7 @@ export default function HomePage() {
       const dateB = b.updatedAt?.seconds || 0;
       return dateB - dateA;
     });
-  }, [rawTemplates]);
+  }, [rawTemplates, activeCategory]);
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
@@ -63,7 +67,9 @@ export default function HomePage() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-background">
       <header className="relative py-12 md:py-24 overflow-hidden">
+        {/* Animated Background Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] md:w-[1200px] h-[300px] md:h-[600px] bg-primary/20 blur-[60px] md:blur-[120px] rounded-full -z-10" />
+        
         <div className="container mx-auto px-4 text-center">
           <Badge variant="outline" className="mb-6 border-primary/50 text-primary py-1 px-4 gap-2 animate-pulse text-[10px] md:text-sm">
             <Sparkles className="w-3 h-3 md:w-4 md:h-4" /> Professional Photocards
@@ -75,13 +81,14 @@ export default function HomePage() {
             Create high-quality 4K photocards in seconds. Optimized for speed and quality.
           </p>
 
-          <div className="w-full flex justify-center px-4">
-            <div className="flex flex-wrap justify-center gap-2 max-w-2xl">
+          {/* Categories Selector */}
+          <div className="w-full flex justify-center px-4 mb-4">
+            <div className="flex flex-wrap justify-center gap-2 max-w-4xl">
               {CATEGORIES.map(cat => (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`rounded-full px-4 md:px-8 py-2 md:py-2.5 border transition-all text-[10px] md:text-sm font-medium
+                  className={`rounded-full px-4 md:px-8 py-2 md:py-2.5 border transition-all text-[10px] md:text-sm font-bold
                     ${activeCategory === cat 
                       ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20" 
                       : "bg-card text-muted-foreground border-border/50 hover:bg-muted/60"}`}
@@ -135,6 +142,8 @@ export default function HomePage() {
                         <ImageIcon className="w-10 h-10 text-muted-foreground/20" />
                       </div>
                     )}
+                    
+                    {/* Rank & Featured Badges */}
                     <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 items-end">
                       {template.displayRank && template.displayRank > 0 && template.displayRank <= 10 && (
                         <Badge className="bg-yellow-500 text-black font-bold gap-1 shadow-xl text-[10px] border-none ring-2 ring-black/5">
@@ -180,9 +189,9 @@ export default function HomePage() {
       </section>
 
       <footer className="py-8 border-t border-border/30 text-center text-[10px] md:text-sm text-muted-foreground px-4 space-y-1">
-        <p>&copy; {currentYear ?? '...'} CardSnap Studio. Engineered for high-quality professional photocards.</p>
+        <p>&copy; {currentYear ?? '...'} CardSnap Studio - by CPI HTC. Engineered for high-quality professional photocards.</p>
         <p>
-          Product by <a href="https://www.facebook.com/najmul.9341/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline transition-colors font-medium">Najmul H. Talukder</a>
+          Product by <a href="https://www.facebook.com/najmul.9341/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline transition-colors font-bold">Najmul H. Talukder</a>
         </p>
       </footer>
     </div>
