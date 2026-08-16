@@ -393,7 +393,7 @@ export default function TemplateEditorPage() {
                 config={{
                   ...config,
                   nameConfig: { ...config.nameConfig, text: "Enter Your Name" },
-                  designationConfig: { ...config.designationConfig, text: "Department/Designation" },
+                  designationConfig: { ...config.designationConfig, text: "Enter Your Designation" },
                   sessionConfig: { ...config.sessionConfig, text: "Session 2021-22" }
                 }} 
                 userPhotoUrl="https://picsum.photos/seed/admin-placeholder/600/600"

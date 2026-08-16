@@ -120,7 +120,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {templates.map(template => (
               <Link key={template.id} href={`/generate/${template.id}`}>
-                <Card className="group relative overflow-hidden border-border/50 bg-card transition-all duration-500 hover:border-primary/40 hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/10 rounded-3xl">
+                <Card className="group relative overflow-hidden border-border/50 bg-card transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/10 rounded-3xl">
                   <div className="aspect-[4/3] relative overflow-hidden bg-muted/20">
                     {template.backgroundImageUrl ? (
                       <Image
@@ -149,15 +149,20 @@ export default function HomePage() {
                         </Badge>
                       )}
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
-                       <span className="text-white font-bold text-sm flex items-center gap-2">Customize Now <ArrowRight className="w-4 h-4" /></span>
-                    </div>
                   </div>
-                  <CardContent className="p-6">
-                    <CardTitle className="text-base md:text-lg font-bold group-hover:text-primary transition-colors truncate mb-1">
-                      {template.title}
-                    </CardTitle>
-                    <p className="text-[10px] md:text-xs text-muted-foreground line-clamp-1">{template.subtitle}</p>
+                  <CardContent className="p-6 space-y-4">
+                    <div className="space-y-1">
+                      <CardTitle className="text-base md:text-lg font-bold group-hover:text-primary transition-colors truncate mb-1">
+                        {template.title}
+                      </CardTitle>
+                      <p className="text-[10px] md:text-xs text-muted-foreground line-clamp-1">{template.subtitle}</p>
+                    </div>
+                    
+                    <div className="pt-2">
+                      <div className="w-full py-2.5 rounded-xl bg-primary/10 text-primary text-[10px] md:text-xs font-bold text-center flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                        Customize Now <ArrowRight className="w-3.5 h-3.5" />
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </Link>
