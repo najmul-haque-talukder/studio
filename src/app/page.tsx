@@ -76,6 +76,7 @@ export default function HomePage() {
             Create ultra-high quality 4K photocards in seconds. Optimized for CPI HTC professionals.
           </p>
 
+          {/* Wrapped Categories for Mobile */}
           <div className="w-full flex justify-center px-4 mb-4">
             <div className="flex flex-wrap justify-center gap-2 max-w-4xl">
               {CATEGORIES.map(cat => (
@@ -152,15 +153,17 @@ export default function HomePage() {
                   </div>
                   <CardContent className="p-6 space-y-4">
                     <div className="space-y-1">
-                      <CardTitle className="text-base md:text-lg font-bold group-hover:text-primary transition-colors truncate mb-1">
+                      {/* Card title color stays white on hover as requested */}
+                      <CardTitle className="text-base md:text-lg font-bold transition-colors truncate mb-1 text-white">
                         {template.title}
                       </CardTitle>
                       <p className="text-[10px] md:text-xs text-muted-foreground line-clamp-1">{template.subtitle}</p>
                     </div>
                     
                     <div className="pt-2">
-                      <div className="w-full py-2.5 rounded-xl bg-primary/10 text-primary text-[10px] md:text-xs font-bold text-center flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
-                        Customize Now <ArrowRight className="w-3.5 h-3.5" />
+                      {/* Button text explicitly white */}
+                      <div className="w-full py-2.5 rounded-xl bg-primary/10 text-white text-[10px] md:text-xs font-bold text-center flex items-center justify-center gap-2 group-hover:bg-primary transition-all duration-300">
+                        Customize Now <ArrowRight className="w-3.5 h-3.5 text-white" />
                       </div>
                     </div>
                   </CardContent>
