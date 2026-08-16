@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import Image from "next/image";
 import { 
   AlertDialog, 
   AlertDialogAction, 
@@ -66,7 +67,7 @@ export default function AdminDashboard() {
           errorEmitter.emit('permission-error', permissionError);
         });
       
-      toast({ title: "Template deletion initiated" });
+      toast({ title: "Template deleted" });
       setDeleteTemplateId(null);
       setConfirmText("");
     }
@@ -86,7 +87,7 @@ export default function AdminDashboard() {
         errorEmitter.emit('permission-error', permissionError);
       });
       
-    toast({ title: `Status update initiated: ${newStatus}` });
+    toast({ title: `Status: ${newStatus}` });
   };
 
   const handleLogout = () => {
@@ -113,7 +114,7 @@ export default function AdminDashboard() {
             </div>
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
-              <p className="text-muted-foreground">Manage and design your photocard templates</p>
+              <p className="text-muted-foreground">Manage photocard templates</p>
             </div>
           </div>
           <div className="flex gap-3 w-full md:w-auto">
@@ -133,16 +134,18 @@ export default function AdminDashboard() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {templates?.map(template => (
-              <Card key={template.id} className="overflow-hidden border-border/50 bg-card/50 hover:bg-card transition-all duration-300 rounded-2xl group hover:shadow-xl hover:border-primary/20">
+              <Card key={template.id} className="overflow-hidden border-border/50 bg-card rounded-2xl group hover:shadow-xl hover:border-primary/20 transition-all">
                 <div className="aspect-video relative bg-muted overflow-hidden">
                   {template.backgroundImageUrl ? (
-                    <img 
-                      src={template.backgroundImageUrl} 
-                      alt={template.title} 
-                      className="w-full h-full object-cover" 
+                    <Image
+                      src={template.backgroundImageUrl}
+                      alt={template.title}
+                      fill
+                      className="object-cover"
+                      unoptimized={template.backgroundImageUrl.includes('firebasestorage.googleapis.com')}
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-muted">
+                    <div className="w-full h-full flex items-center justify-center">
                       <ImageIcon className="w-8 h-8 text-muted-foreground/50" />
                     </div>
                   )}
@@ -177,23 +180,23 @@ export default function AdminDashboard() {
         )}
 
         <AlertDialog open={!!deleteTemplateId} onOpenChange={(open) => !open && setDeleteTemplateId(null)}>
-          <AlertDialogContent className="rounded-2xl border-border/50">
+          <AlertDialogContent className="rounded-2xl">
             <AlertDialogHeader>
               <div className="w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mb-2">
                 <AlertTriangle className="text-destructive w-6 h-6" />
               </div>
-              <AlertDialogTitle className="text-2xl font-bold">Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription className="text-base">
-                This action cannot be undone. This will permanently delete the template and all associated data.
+              <AlertDialogTitle className="text-2xl font-bold">Delete Template?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. All associated data will be lost.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="py-4 space-y-3">
-              <p className="text-sm font-medium">Please type <span className="text-destructive font-bold">DELETE</span> to confirm:</p>
+              <p className="text-sm font-medium">Type <span className="text-destructive font-bold">DELETE</span> to confirm:</p>
               <Input 
                 value={confirmText}
                 onChange={(e) => setConfirmText(e.target.value)}
                 placeholder="Type 'DELETE' here"
-                className="h-12 rounded-xl border-destructive/30 focus-visible:ring-destructive"
+                className="h-12 rounded-xl border-destructive/30"
               />
             </div>
             <AlertDialogFooter>
@@ -201,9 +204,9 @@ export default function AdminDashboard() {
               <AlertDialogAction 
                 onClick={handleConfirmDelete}
                 disabled={confirmText !== "DELETE"}
-                className="rounded-xl h-11 bg-destructive hover:bg-destructive/90 text-white font-bold"
+                className="rounded-xl h-11 bg-destructive hover:bg-destructive/90"
               >
-                Delete Template
+                Delete
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

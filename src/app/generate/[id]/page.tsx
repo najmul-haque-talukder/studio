@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
-import { ChevronLeft, Download, Camera, Loader2, Sparkles, ZoomIn, ArrowRight, Settings2 } from "lucide-react";
+import { ChevronLeft, Download, Camera, Loader2, Sparkles, ZoomIn, ArrowRight, Settings2, MoveHorizontal, MoveVertical } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -30,6 +30,7 @@ export default function GeneratePage() {
   const [step, setStep] = useState(1);
   const [userPhotoUrl, setUserPhotoUrl] = useState<string>("");
   const [userPhotoScale, setUserPhotoScale] = useState(1);
+  const [userPhotoOffset, setUserPhotoOffset] = useState({ x: 0, y: 0 });
   const [formData, setFormData] = useState({
     name: "",
     designation: "",
@@ -60,7 +61,8 @@ export default function GeneratePage() {
       const url = URL.createObjectURL(file);
       setUserPhotoUrl(url);
       setUserPhotoScale(1); 
-      toast({ title: "Photo attached!", description: "You can now adjust it in the preview." });
+      setUserPhotoOffset({ x: 0, y: 0 });
+      toast({ title: "Photo attached!", description: "Adjust the position in preview." });
     }
   };
 
@@ -97,9 +99,9 @@ export default function GeneratePage() {
 
   const canvasConfig = {
     ...template,
-    nameConfig: { ...template.nameConfig, text: formData.name || "Your Name" },
-    designationConfig: { ...template.designationConfig, text: formData.designation || "Department/Designation" },
-    sessionConfig: { ...template.sessionConfig, text: formData.session || "Session 2021-22" }
+    nameConfig: { ...template.nameConfig, text: formData.name || "Enter Your Name" },
+    designationConfig: { ...template.designationConfig, text: formData.designation || "Enter Your Designation" },
+    sessionConfig: { ...template.sessionConfig, text: formData.session || "Enter Your Session" }
   };
 
   return (
@@ -129,14 +131,14 @@ export default function GeneratePage() {
               </h2>
               
               <div className="space-y-2">
-                <Label className="text-sm">Your Photo (Required)</Label>
+                <Label className="text-sm">Your Photo</Label>
                 <div className="relative group aspect-square rounded-2xl border-2 border-dashed border-border bg-muted/30 hover:bg-muted/50 transition-colors flex flex-col items-center justify-center overflow-hidden">
                   {userPhotoUrl ? (
                     <img src={userPhotoUrl} alt="Preview" className="w-full h-full object-cover" />
                   ) : (
                     <>
                       <Camera className="w-8 h-8 md:w-10 md:h-10 text-muted-foreground mb-2" />
-                      <span className="text-xs text-muted-foreground text-center px-4">Click to upload your photo</span>
+                      <span className="text-xs text-muted-foreground text-center px-4">Upload your photo</span>
                     </>
                   )}
                   <input
@@ -150,12 +152,12 @@ export default function GeneratePage() {
 
               <div className="space-y-3">
                 <div className="space-y-1">
-                  <Label htmlFor="name" className="text-xs">Full Name *</Label>
+                  <Label htmlFor="name" className="text-xs">Full Name</Label>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="John Doe"
+                    placeholder="Enter Your Name"
                     className="rounded-xl h-10 md:h-12 text-sm"
                   />
                 </div>
@@ -165,7 +167,7 @@ export default function GeneratePage() {
                     id="designation"
                     value={formData.designation}
                     onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
-                    placeholder="Department/Designation"
+                    placeholder="Enter Your Designation"
                     className="rounded-xl h-10 md:h-12 text-sm"
                   />
                 </div>
@@ -175,7 +177,7 @@ export default function GeneratePage() {
                     id="session"
                     value={formData.session}
                     onChange={(e) => setFormData({ ...formData, session: e.target.value })}
-                    placeholder="Session 2021-22"
+                    placeholder="Enter Your Session"
                     className="rounded-xl h-10 md:h-12 text-sm"
                   />
                 </div>
@@ -185,9 +187,9 @@ export default function GeneratePage() {
             <Button 
               className="w-full h-12 md:h-14 rounded-xl text-base md:text-lg font-bold gap-2 md:hidden" 
               onClick={() => setStep(2)}
-              disabled={!userPhotoUrl || !formData.name}
+              disabled={!userPhotoUrl}
             >
-              Continue to Preview <ArrowRight className="w-4 h-4" />
+              Preview & Adjust <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
 
@@ -203,30 +205,62 @@ export default function GeneratePage() {
                 config={canvasConfig} 
                 userPhotoUrl={userPhotoUrl || DEFAULT_USER_PLACEHOLDER} 
                 userPhotoScale={userPhotoScale}
+                userPhotoOffset={userPhotoOffset}
                 ref={canvasRef} 
               />
             </div>
 
-            {/* Zoom Controls - Visible in Preview Step */}
+            {/* Position Controls */}
             {userPhotoUrl && (
-              <div className="p-4 md:p-5 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 shadow-lg space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Settings2 className="w-4 h-4 text-primary" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-foreground">Adjust Photo Size</span>
+              <div className="p-4 md:p-5 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 shadow-lg space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <ZoomIn className="w-4 h-4 text-primary" />
+                      <span className="text-xs font-bold uppercase tracking-wider">Scale Image</span>
+                    </div>
+                    <Badge variant="secondary" className="font-mono text-[10px]">{Math.round(userPhotoScale * 100)}%</Badge>
                   </div>
-                  <Badge variant="secondary" className="font-mono text-[10px]">{Math.round(userPhotoScale * 100)}%</Badge>
-                </div>
-                <div className="flex items-center gap-4">
-                  <ZoomIn className="w-4 h-4 text-muted-foreground shrink-0" />
                   <Slider 
                     value={[userPhotoScale]} 
                     min={0.5} 
                     max={3} 
                     step={0.01} 
                     onValueChange={([val]) => setUserPhotoScale(val)}
-                    className="flex-1"
                   />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <MoveHorizontal className="w-4 h-4 text-primary" />
+                        <span className="text-xs font-bold uppercase tracking-wider">X Position</span>
+                      </div>
+                    </div>
+                    <Slider 
+                      value={[userPhotoOffset.x]} 
+                      min={-200} 
+                      max={200} 
+                      step={1} 
+                      onValueChange={([val]) => setUserPhotoOffset(prev => ({ ...prev, x: val }))}
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <MoveVertical className="w-4 h-4 text-primary" />
+                        <span className="text-xs font-bold uppercase tracking-wider">Y Position</span>
+                      </div>
+                    </div>
+                    <Slider 
+                      value={[userPhotoOffset.y]} 
+                      min={-200} 
+                      max={200} 
+                      step={1} 
+                      onValueChange={([val]) => setUserPhotoOffset(prev => ({ ...prev, y: val }))}
+                    />
+                  </div>
                 </div>
               </div>
             )}
@@ -243,13 +277,13 @@ export default function GeneratePage() {
                 <Button 
                   className="flex-1 h-12 md:h-14 rounded-xl text-base md:text-lg font-bold bg-secondary hover:bg-secondary/90 gap-2 shadow-xl shadow-secondary/10"
                   onClick={handleDownload}
-                  disabled={!userPhotoUrl || !formData.name}
+                  disabled={!userPhotoUrl}
                 >
                   <Download className="w-4 h-4 md:w-5 md:h-5" /> Download 4K JPG
                 </Button>
               </div>
               <p className="text-center text-[10px] md:text-xs text-muted-foreground italic">
-                {userPhotoUrl ? "Tip: Drag the photo and use the slider to position it perfectly." : "Please upload your photo to preview the card."}
+                {userPhotoUrl ? "Use the sliders above to position your photo perfectly." : "Upload your photo to preview."}
               </p>
             </div>
           </div>

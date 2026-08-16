@@ -36,6 +36,7 @@ interface PhotoCardCanvasProps {
   config: TemplateConfig;
   userPhotoUrl?: string;
   userPhotoScale?: number;
+  userPhotoOffset?: { x: number; y: number };
   width?: number;
   height?: number;
   onUserPhotoTransform?: (x: number, y: number) => void;
@@ -46,6 +47,7 @@ export const PhotoCardCanvas = forwardRef(({
   config, 
   userPhotoUrl, 
   userPhotoScale = 1,
+  userPhotoOffset = { x: 0, y: 0 },
   width = 500, 
   height = 500,
   onUserPhotoTransform,
@@ -58,7 +60,7 @@ export const PhotoCardCanvas = forwardRef(({
   const [bgImage] = useImage(config.backgroundImageUrl || null, "anonymous");
   const [userPhoto] = useImage(userPhotoUrl || null, "anonymous");
 
-  // Handle Responsiveness by scaling the stage
+  // Handle Responsiveness
   useEffect(() => {
     const handleResize = () => {
       if (containerRef.current) {
@@ -84,7 +86,7 @@ export const PhotoCardCanvas = forwardRef(({
       if (!stageRef.current) return;
       const stage = stageRef.current;
       
-      // Safety check to avoid InvalidStateError on zero dimensions
+      // Safety check
       if (stage.width() <= 0 || stage.height() <= 0) {
         console.error("Cannot export: Stage has zero dimensions.");
         return;
@@ -92,7 +94,7 @@ export const PhotoCardCanvas = forwardRef(({
 
       try {
         const dataUrl = stage.toDataURL({ 
-          pixelRatio: 4, // Up-scale to 4K quality (Stage 500 * 4 = 2000px)
+          pixelRatio: 4, 
           mimeType: 'image/jpeg',
           quality: 1.0
         });
@@ -135,7 +137,7 @@ export const PhotoCardCanvas = forwardRef(({
         fontStyle={layerConfig.fontStyle || "normal"}
         fill={layerConfig.color || "#000000"}
         align={layerConfig.align || "center"}
-        width={width} // Ensure text is centered relative to card width
+        width={width}
         fontFamily='"Bricolage Grotesque", "Hind Siliguri", sans-serif'
         draggable={!!onLayerTransform}
         onDragEnd={(e) => {
@@ -181,7 +183,7 @@ export const PhotoCardCanvas = forwardRef(({
   };
 
   return (
-    <div ref={containerRef} className="relative aspect-square w-full max-w-[500px] mx-auto overflow-hidden bg-[#1e1e1e] rounded-xl shadow-inner border border-border/50">
+    <div ref={containerRef} className="relative aspect-square w-full max-w-[500px] mx-auto overflow-hidden bg-[#1a1a1a] rounded-xl shadow-inner border border-border/50">
       <Stage 
         width={Math.max(1, width * scale)} 
         height={Math.max(1, height * scale)} 
@@ -205,20 +207,15 @@ export const PhotoCardCanvas = forwardRef(({
             {userPhoto && (
               <KonvaImage 
                 image={userPhoto} 
-                x={config.photoConfig.x + (frameWidth / 2)} 
-                y={config.photoConfig.y + (frameHeight / 2)}
+                x={config.photoConfig.x + (frameWidth / 2) + userPhotoOffset.x} 
+                y={config.photoConfig.y + (frameHeight / 2) + userPhotoOffset.y}
                 width={userPhoto.width}
                 height={userPhoto.height}
                 scaleX={(frameWidth / userPhoto.width) * userPhotoScale}
                 scaleY={(frameWidth / userPhoto.width) * userPhotoScale}
                 offsetX={userPhoto.width / 2}
                 offsetY={userPhoto.height / 2}
-                draggable
-                onDragEnd={(e) => {
-                  if (onUserPhotoTransform) {
-                    onUserPhotoTransform(e.target.x(), e.target.y());
-                  }
-                }}
+                draggable={!onUserPhotoTransform}
                 key={`photo-${userPhotoUrl}`}
               />
             )}

@@ -42,40 +42,41 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen overflow-x-hidden">
-      <header className="relative py-8 md:py-24 overflow-hidden">
+    <div className="min-h-screen overflow-x-hidden bg-background">
+      <header className="relative py-12 md:py-24 overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] md:w-[1200px] h-[300px] md:h-[600px] bg-primary/20 blur-[60px] md:blur-[120px] rounded-full -z-10" />
         <div className="container mx-auto px-4 text-center">
-          <Badge variant="outline" className="mb-4 md:mb-6 border-primary/50 text-primary py-1 px-4 gap-2 animate-pulse text-[10px] md:text-sm">
+          <Badge variant="outline" className="mb-6 border-primary/50 text-primary py-1 px-4 gap-2 animate-pulse text-[10px] md:text-sm">
             <Sparkles className="w-3 h-3 md:w-4 md:h-4" /> Professional Photocards
           </Badge>
-          <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 tracking-tight leading-tight px-2">
+          <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold mb-6 tracking-tight leading-tight px-2">
             Design Your <span className="text-primary italic">Signature</span> Card
           </h1>
-          <p className="text-xs md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6 md:mb-10 px-6">
-            Create high-quality 4K photocards for your events, sessions, or professional needs in seconds.
+          <p className="text-xs md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 px-6">
+            Create high-quality 4K photocards in seconds. Optimized for speed and quality.
           </p>
 
           <div className="w-full flex justify-center px-2">
-            <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full max-w-2xl">
-              <TabsList className="bg-transparent h-auto p-0 flex flex-wrap justify-center gap-2">
-                {CATEGORIES.map(cat => (
-                  <TabsTrigger 
-                    key={cat} 
-                    value={cat} 
-                    className="rounded-full px-3 md:px-8 py-1.5 md:py-2.5 bg-muted/40 border border-border/50 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-[10px] md:text-sm transition-all hover:bg-muted/60"
-                  >
-                    {cat}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
+            <div className="flex flex-wrap justify-center gap-2 max-w-2xl">
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`rounded-full px-4 md:px-8 py-2 md:py-2.5 border transition-all text-[10px] md:text-sm font-medium
+                    ${activeCategory === cat 
+                      ? "bg-primary text-primary-foreground border-primary" 
+                      : "bg-muted/40 text-muted-foreground border-border/50 hover:bg-muted/60"}`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </header>
 
-      <section className="container mx-auto px-4 md:px-6">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 md:mb-8 gap-3">
+      <section className="container mx-auto px-4 md:px-6 mb-16">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-3">
           <h2 className="text-xl md:text-3xl font-bold tracking-tight">
             {activeCategory === "All" ? "Latest Templates" : `${activeCategory} Templates`}
           </h2>
@@ -96,18 +97,20 @@ export default function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {templates.map(template => (
               <Link key={template.id} href={`/generate/${template.id}`}>
-                <Card className="group relative overflow-hidden border-border/50 bg-card transition-all duration-300 hover:border-primary/40 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10">
-                  <div className="aspect-[4/3] relative overflow-hidden">
+                <Card className="group relative overflow-hidden border-border/50 bg-card transition-all duration-300 hover:border-primary/40 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10 rounded-2xl">
+                  <div className="aspect-[4/3] relative overflow-hidden bg-muted/20">
                     {template.backgroundImageUrl ? (
                       <Image
                         src={template.backgroundImageUrl}
                         alt={template.title}
                         fill
                         className="object-cover"
-                        unoptimized={template.backgroundImageUrl.includes('ibb.co')}
+                        unoptimized={template.backgroundImageUrl.includes('firebasestorage.googleapis.com')}
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        priority
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-muted/30">
+                      <div className="w-full h-full flex items-center justify-center">
                         <ImageIcon className="w-10 h-10 text-muted-foreground/20" />
                       </div>
                     )}
@@ -145,12 +148,12 @@ export default function HomePage() {
               <ImageIcon className="w-6 h-6 md:w-8 md:h-8 text-muted-foreground/30" />
             </div>
             <h3 className="text-lg md:text-xl font-bold mb-2">No templates available</h3>
-            <p className="text-xs md:text-sm text-muted-foreground max-w-sm mx-auto">We couldn't find any published templates in the {activeCategory} category. Please check back later.</p>
+            <p className="text-xs md:text-sm text-muted-foreground max-w-sm mx-auto">We couldn't find any published templates in the {activeCategory} category.</p>
           </div>
         )}
       </section>
 
-      <footer className="mt-8 py-8 border-t border-border/30 text-center text-[10px] md:text-sm text-muted-foreground px-4 space-y-1">
+      <footer className="py-8 border-t border-border/30 text-center text-[10px] md:text-sm text-muted-foreground px-4 space-y-1">
         <p>&copy; {currentYear ?? '...'} CardSnap Studio. Engineered for high-quality professional photocards.</p>
         <p>
           Product by <a href="https://www.facebook.com/najmul.9341/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline transition-colors font-medium">Najmul H. Talukder</a>
